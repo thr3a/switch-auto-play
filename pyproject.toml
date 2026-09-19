@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "thr3a", email = "thr3a@example.com" }
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.13,<3.14"
 dependencies = [
     "nxbt>=0.1.4",
     "opencv-python>=5.0.0.93",
@@ -15,6 +15,10 @@ dependencies = [
 
 [project.scripts]
 switch-auto-play = "switch_auto_play:main"
+
+[tool.uv]
+python-preference = "only-system"
+override-dependencies = ["dbus-python>=1.3.2"]
 
 [build-system]
 requires = ["uv_build>=0.12.17,<0.13.0"]
