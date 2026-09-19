@@ -8,7 +8,7 @@ authors = [
 ]
 requires-python = ">=3.13,<3.14"
 dependencies = [
-    "nxbt>=0.1.4",
+    "nuxbt>=3.3.7",
     "opencv-python>=5.0.0.93",
     "ruff>=0.16.8",
 ]
