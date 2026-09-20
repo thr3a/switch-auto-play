@@ -9,6 +9,7 @@ authors = [
 requires-python = ">=3.13,<3.14"
 dependencies = [
     "nuxbt>=3.3.7",
+    "openai>=3.16.2",
     "opencv-python>=5.0.0.93",
     "ruff>=0.16.8",
 ]
