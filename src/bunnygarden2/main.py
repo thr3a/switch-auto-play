@@ -3,8 +3,10 @@ BUNNY GARDEN2のギャンブルを自動ループする。
 WINしたらセーブ、LOSEしたらロードして損失をなかったことにすることで実質的に負けなしで資金を増やし続ける。研究目的。
 
 実行方法: uv run src/bunnygarden2/main.py
+残りWIN回数を指定して再開する場合: uv run src/bunnygarden2/main.py --win-limit 5
 """
 
+import argparse
 import sys
 import time
 from datetime import datetime
@@ -78,8 +80,22 @@ def wait_for_amount(label: str, timeout: float, interval: float = 1.0) -> int:
         time.sleep(interval)
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="BUNNY GARDEN2のギャンブルを自動ループする")
+    parser.add_argument(
+        "--win-limit",
+        type=int,
+        default=9,
+        help="このWIN回数に到達したら終了する(不具合等で途中再開する場合は残り回数を指定)",
+    )
+    return parser.parse_args()
+
+
 def main() -> None:
-    print(f"セッション開始: {RUN_ID} (保存先: {SESSION_DIR})")
+    args = parse_args()
+    WIN_LIMIT = args.win_limit
+
+    print(f"セッション開始: {RUN_ID} (保存先: {SESSION_DIR}, WIN_LIMIT: {WIN_LIMIT})")
 
     nx, idx = controller.connect()
     print("コントローラー接続完了")
@@ -88,7 +104,6 @@ def main() -> None:
     real_pnl = 0  # LOSEはロードでなかったことになるのでWINのみ計上した実質損益
     round_count = 0
     win_count = 0
-    WIN_LIMIT = 9
 
     try:
         # 最初の確認。「バニーガーデンへ入店します」が出ていなければsizi.mdの想定と違うので終了する
