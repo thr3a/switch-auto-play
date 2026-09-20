@@ -3,14 +3,15 @@ name = "switch-auto-play"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
+requires-python = "==3.13.*"
 authors = [
     { name = "thr3a", email = "thr3a@example.com" }
 ]
-requires-python = ">=3.13,<3.14"
 dependencies = [
     "nuxbt>=3.3.7",
     "openai>=3.16.2",
     "opencv-python>=5.0.0.93",
+    "requests>=2.34.2",
     "ruff>=0.16.8",
 ]
 
