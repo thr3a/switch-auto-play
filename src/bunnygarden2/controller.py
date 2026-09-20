@@ -12,7 +12,8 @@ RIGHT = nuxbt.Buttons.DPAD_RIGHT
 
 
 def connect() -> tuple[nuxbt.Nuxbt, int]:
-    nx = nuxbt.Nuxbt(debug=True)
+    # nx = nuxbt.Nuxbt(debug=True)
+    nx = nuxbt.Nuxbt()
     reconnect_address = find_devices_by_alias("Nintendo Switch")
     print(f"reconnect_address: {reconnect_address}")
 

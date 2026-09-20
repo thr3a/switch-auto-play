@@ -36,7 +36,7 @@ def shot(label: str) -> Path:
     return path
 
 
-def wait_for_text(label: str, keyword: str, timeout: float, interval: float = 1.5) -> dict:
+def wait_for_text(label: str, keyword: str, timeout: float, interval: float = 1.0) -> dict:
     """指定キーワードを含む段落が現れるまでスクショ+OCRを繰り返す"""
     deadline = time.monotonic() + timeout
     while True:
@@ -59,7 +59,7 @@ def wait_for_text(label: str, keyword: str, timeout: float, interval: float = 1.
         time.sleep(interval)
 
 
-def wait_for_amount(label: str, timeout: float, interval: float = 2.0) -> int:
+def wait_for_amount(label: str, timeout: float, interval: float = 1.0) -> int:
     """WIN/LOSE画面の符号付き金額が現れるまでスクショ+OCRを繰り返す"""
     deadline = time.monotonic() + timeout
     while True:
@@ -102,15 +102,11 @@ def main() -> None:
             wait_for_text("home_gyanburu", "ギャンブルに挑戦します", timeout=10)
 
             controller.press(nx, idx, controller.A)
-            wait_for_text(
-                "gyanburu_left", "安心して楽しく遊べるレートです", timeout=30, interval=2.0
-            )
+            wait_for_text("gyanburu_left", "安心して楽しく遊べるレートです", timeout=30)
 
             # 右に2回で一番高いレートへ
             controller.press_n(nx, idx, controller.RIGHT, 2, interval=0.4)
-            wait_for_text(
-                "gyanburu_right", "本気で勝負したいときのレートです", timeout=10
-            )
+            wait_for_text("gyanburu_right", "本気で勝負したいときのレートです", timeout=10)
 
             controller.press(nx, idx, controller.A)
 
@@ -120,7 +116,6 @@ def main() -> None:
 
             # 下2回でセーブ/ロードへ
             controller.press_n(nx, idx, controller.DOWN, 2, interval=0.4)
-            wait_for_text("home_saveload", "ードが行えます", timeout=10)
 
             if amount >= 0:
                 print(f"WIN: {amount:+,}円 -> セーブして再挑戦")
@@ -128,7 +123,7 @@ def main() -> None:
                 controller.press_n(nx, idx, controller.A, 4, interval=1.0)
                 # キャンセルでホームまで2回戻る
                 controller.press_n(nx, idx, controller.B, 2, interval=0.5)
-                wait_for_text("home_saveload_back", "ードが行えます", timeout=10)
+                # wait_for_text("home_saveload_back", "ードが行えます", timeout=10)
                 controller.press_n(nx, idx, controller.UP, 2, interval=0.4)
             else:
                 print(f"LOSE: {amount:+,}円 -> ロードして損失をなかったことにする")
@@ -137,9 +132,7 @@ def main() -> None:
                 # 「ロード」へカーソル移動してから選択->スロット選択->ロード確認「はい」まで1秒間隔でAを3回
                 controller.press(nx, idx, controller.DOWN)
                 controller.press_n(nx, idx, controller.A, 3, interval=1.0)
-                wait_for_text(
-                    "home_first_reload", "ガーデンへ入店します", timeout=30, interval=2.0
-                )
+                wait_for_text("home_first_reload", "ガーデンへ入店します", timeout=30)
 
     except KeyboardInterrupt:
         print("ユーザー操作により中断しました")
