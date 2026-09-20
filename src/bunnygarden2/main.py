@@ -1,11 +1,8 @@
 """
-BUNNY GARDEN2のギャンブル(GC ギャンブル)を自動ループする。
+BUNNY GARDEN2のギャンブルを自動ループする。
+WINしたらセーブ、LOSEしたらロードして損失をなかったことにすることで実質的に負けなしで資金を増やし続ける。研究目的。
 
-WINしたらセーブ、LOSEしたらロードして損失をなかったことにすることで
-実質的に負けなしで資金を増やし続ける。研究目的。
-
-実行方法:
-    uv run src/bunnygarden2/main.py
+実行方法: uv run src/bunnygarden2/main.py
 """
 
 import sys
@@ -21,7 +18,7 @@ import controller
 import ocr
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-RUN_ID = datetime.now().strftime("%Y%m%d_%H%M%S")
+RUN_ID = datetime.now().strftime("%Y%m%d_%H%M")
 SESSION_DIR = REPO_ROOT / "captures" / "bunnygarden2" / RUN_ID
 
 _shot_counter = 0
@@ -87,7 +84,8 @@ def main() -> None:
     nx, idx = controller.connect()
     print("コントローラー接続完了")
 
-    total_pnl = 0
+    total_pnl = 0  # LOSE込みの損益(ロード前の見かけ上の値)
+    real_pnl = 0  # LOSEはロードでなかったことになるのでWINのみ計上した実質損益
     round_count = 0
     win_count = 0
     WIN_LIMIT = 9
@@ -98,7 +96,7 @@ def main() -> None:
 
         while True:
             round_count += 1
-            print(f"=== ラウンド {round_count} (累計損益 {total_pnl:+,}円) ===")
+            print(f"=== ラウンド {round_count} (累計損益 {total_pnl:+,}円 / 実質損益 {real_pnl:+,}円) ===")
 
             # 右ボタン3回でギャンブルアイコンへ移動
             controller.press_n(nx, idx, controller.RIGHT, 3)
@@ -123,6 +121,7 @@ def main() -> None:
             controller.press_n(nx, idx, controller.DOWN, 2)
 
             if amount >= 0:
+                real_pnl += amount
                 win_count += 1
                 print(f"WIN: {amount:+,}円 -> セーブして再挑戦 (WIN {win_count}/{WIN_LIMIT})")
                 # セーブ選択 -> スロット選択 -> 上書き確認「はい」まで1秒間隔でAを4回
@@ -147,7 +146,7 @@ def main() -> None:
     except KeyboardInterrupt:
         print("ユーザー操作により中断しました")
     finally:
-        print(f"終了。{round_count}ラウンド実施、累計損益 {total_pnl:+,}円")
+        print(f"終了。{round_count}ラウンド実施、累計損益 {total_pnl:+,}円 / 実質損益 {real_pnl:+,}円")
 
 
 if __name__ == "__main__":
