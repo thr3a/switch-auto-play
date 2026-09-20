@@ -13,6 +13,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+sys.stdout.reconfigure(line_buffering=True)
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import capture
@@ -98,40 +99,41 @@ def main() -> None:
             print(f"=== ラウンド {round_count} (累計損益 {total_pnl:+,}円) ===")
 
             # 右ボタン3回でギャンブルアイコンへ移動
-            controller.press_n(nx, idx, controller.RIGHT, 3, interval=0.4)
-            wait_for_text("home_gyanburu", "ギャンブルに挑戦します", timeout=10)
+            controller.press_n(nx, idx, controller.RIGHT, 3)
+            # wait_for_text("home_gyanburu", "ギャンブルに挑戦します", timeout=10)
 
             controller.press(nx, idx, controller.A)
             wait_for_text("gyanburu_left", "安心して楽しく遊べるレートです", timeout=30)
 
             # 右に2回で一番高いレートへ
-            controller.press_n(nx, idx, controller.RIGHT, 2, interval=0.4)
+            controller.press_n(nx, idx, controller.RIGHT, 2)
             wait_for_text("gyanburu_right", "本気で勝負したいときのレートです", timeout=10)
 
             controller.press(nx, idx, controller.A)
 
-            amount = wait_for_amount("gyanburu_result", timeout=60, interval=2.0)
-            controller.press(nx, idx, controller.B)
+            amount = wait_for_amount("gyanburu_result", timeout=60)
             total_pnl += amount
 
+            controller.press(nx, idx, controller.B)
+
             # 下2回でセーブ/ロードへ
-            controller.press_n(nx, idx, controller.DOWN, 2, interval=0.4)
+            # wait_for_text("home_gyanburu", "ギャンブルに挑戦します", timeout=10)
+            controller.press_n(nx, idx, controller.DOWN, 2)
 
             if amount >= 0:
                 print(f"WIN: {amount:+,}円 -> セーブして再挑戦")
                 # セーブ選択 -> スロット選択 -> 上書き確認「はい」まで1秒間隔でAを4回
-                controller.press_n(nx, idx, controller.A, 4, interval=1.0)
+                controller.press_n(nx, idx, controller.A, 4, interval=1)
                 # キャンセルでホームまで2回戻る
-                controller.press_n(nx, idx, controller.B, 2, interval=0.5)
-                # wait_for_text("home_saveload_back", "ードが行えます", timeout=10)
-                controller.press_n(nx, idx, controller.UP, 2, interval=0.4)
+                controller.press_n(nx, idx, controller.B, 2, interval=1)
+                controller.press_n(nx, idx, controller.UP, 2)
             else:
                 print(f"LOSE: {amount:+,}円 -> ロードして損失をなかったことにする")
                 # セーブ/ロードのサブメニューへ(デフォルトで「セーブ」がハイライトされている)
                 controller.press(nx, idx, controller.A)
                 # 「ロード」へカーソル移動してから選択->スロット選択->ロード確認「はい」まで1秒間隔でAを3回
                 controller.press(nx, idx, controller.DOWN)
-                controller.press_n(nx, idx, controller.A, 3, interval=1.0)
+                controller.press_n(nx, idx, controller.A, 3, interval=1)
                 wait_for_text("home_first_reload", "ガーデンへ入店します", timeout=30)
 
     except KeyboardInterrupt:

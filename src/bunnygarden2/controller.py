@@ -27,6 +27,7 @@ def connect() -> tuple[nuxbt.Nuxbt, int]:
 
 def press(nx: nuxbt.Nuxbt, controller_index: int, button: str, down: float = 0.1, up: float = 0.3) -> None:
     nx.press_buttons(controller_index, [button], down=down, up=up)
+    time.sleep(0.5)
 
 
 def press_n(
@@ -34,7 +35,7 @@ def press_n(
     controller_index: int,
     button: str,
     times: int,
-    interval: float = 0.5,
+    interval: float = 0.4,
     down: float = 0.1,
 ) -> None:
     """同じボタンをinterval秒間隔でtimes回押す"""
@@ -42,3 +43,4 @@ def press_n(
         press(nx, controller_index, button, down=down, up=0.1)
         if i < times - 1:
             time.sleep(interval)
+    time.sleep(0.5)
