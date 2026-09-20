@@ -89,6 +89,8 @@ def main() -> None:
 
     total_pnl = 0
     round_count = 0
+    win_count = 0
+    WIN_LIMIT = 9
 
     try:
         # 最初の確認。「バニーガーデンへ入店します」が出ていなければsizi.mdの想定と違うので終了する
@@ -121,12 +123,18 @@ def main() -> None:
             controller.press_n(nx, idx, controller.DOWN, 2)
 
             if amount >= 0:
-                print(f"WIN: {amount:+,}円 -> セーブして再挑戦")
+                win_count += 1
+                print(f"WIN: {amount:+,}円 -> セーブして再挑戦 (WIN {win_count}/{WIN_LIMIT})")
                 # セーブ選択 -> スロット選択 -> 上書き確認「はい」まで1秒間隔でAを4回
                 controller.press_n(nx, idx, controller.A, 4, interval=1)
                 # キャンセルでホームまで2回戻る
                 controller.press_n(nx, idx, controller.B, 2, interval=1)
                 controller.press_n(nx, idx, controller.UP, 2)
+                controller.press_n(nx, idx, controller.LEFT, 3)
+
+                if win_count >= WIN_LIMIT:
+                    print(f"WINが{WIN_LIMIT}回たまったので終了します(日付変更対策)")
+                    break
             else:
                 print(f"LOSE: {amount:+,}円 -> ロードして損失をなかったことにする")
                 # セーブ/ロードのサブメニューへ(デフォルトで「セーブ」がハイライトされている)
