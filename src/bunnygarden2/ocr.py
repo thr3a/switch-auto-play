@@ -41,16 +41,21 @@ def contains_text(result: dict[str, Any], keyword: str) -> bool:
 
 
 def find_amount(result: dict[str, Any]) -> int | None:
-    """WIN/LOSE画面のfigures配下から符号付き金額を探す。見つからなければNone。
-    金額はグラフィカルな領域(figure)として分類されるため、トップレベルのparagraphsには出てこない。
+    """WIN/LOSE画面の符号付き金額(例: +16,100円)を探す。見つからなければNone。
+    金額はグラフィカルな領域(figure)として分類される場合とトップレベルのparagraphとして
+    分類される場合の両方があるため、両方を検索する。
     """
     content = result["content"][0]
+    texts = list(get_paragraph_texts(result))
     for figure in content.get("figures", []):
         for paragraph in figure.get("paragraphs", []):
-            match = AMOUNT_PATTERN.search(paragraph.get("contents", ""))
-            if match:
-                amount_str = match.group()
-                sign = 1 if amount_str[0] == "+" else -1
-                digits = amount_str[1:-1].replace(",", "")
-                return sign * int(digits)
+            texts.append(paragraph.get("contents", ""))
+
+    for text in texts:
+        match = AMOUNT_PATTERN.search(text)
+        if match:
+            amount_str = match.group()
+            sign = 1 if amount_str[0] == "+" else -1
+            digits = amount_str[1:-1].replace(",", "")
+            return sign * int(digits)
     return None
