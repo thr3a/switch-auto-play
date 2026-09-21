@@ -39,7 +39,7 @@ python3 -c "import socket; print(socket.AF_BLUETOOTH, socket.BTPROTO_L2CAP)"
 AF_BLUETOOTHとBTPROTO_L2CAPが出力されればOKです。その後 .venvを作り直して(uv venv --python $(mise which python3) など) uv sync し直す必要があります。ビルド自体は数分かかります。実行してよければ言ってください。
 
 =================
-内臓BT無効化　USBでやってみる
+内臓BT無効化
 thr3a@ubuntu06:~/switch-auto-play$ cat /etc/udev/rules.d/99-disable-internal-bluetooth.rules
 # 調子の悪い内蔵Bluetooth(Intel 8087:0a2a)をUSBデバイスとして認識させない
 ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="8087", ATTR{idProduct}=="0a2a", ATTR{authorized}="0"
